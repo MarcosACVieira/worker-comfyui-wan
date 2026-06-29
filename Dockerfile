@@ -11,13 +11,18 @@ RUN cd /comfyui/custom_nodes \
     && uv pip install -r ComfyUI-GGUF/requirements.txt
 
 # Patch worker handler to also capture VHS video output (stored under 'gifs' key in ComfyUI history)
-RUN find / -name "*.py" -not -path "*/proc/*" -not -path "*/sys/*" 2>/dev/null | \
-    xargs grep -l "'images' in node_output" 2>/dev/null | \
-    while read f; do \
-        echo "Patching $f"; \
-        sed -i "s/'images' in node_output/'images' in node_output or 'gifs' in node_output/g" "$f"; \
-        sed -i "s/node_output\['images'\]/node_output.get('images', node_output.get('gifs', []))/g" "$f"; \
-    done
+RUN set +e; \
+    TARGET=$(find /src /handler.py /app -name "rp_handler.py" -o -name "handler.py" 2>/dev/null | head -1); \
+    if [ -z "$TARGET" ]; then TARGET=$(grep -rl "node_output" / --include="*.py" 2>/dev/null | grep -v "/__pycache__/" | head -1); fi; \
+    if [ -n "$TARGET" ]; then \
+      echo "Patching $TARGET"; \
+      sed -i "s/'images' in node_output/'images' in node_output or 'gifs' in node_output/g" "$TARGET"; \
+      sed -i 's/"images" in node_output/"images" in node_output or "gifs" in node_output/g' "$TARGET"; \
+      sed -i "s/node_output\['images'\]/node_output.get('images', node_output.get('gifs', []))/g" "$TARGET"; \
+      sed -i 's/node_output\["images"\]/node_output.get("images", node_output.get("gifs", []))/g' "$TARGET"; \
+      echo "Patch done"; \
+    else echo "Handler not found - skipping patch"; fi; \
+    set -e
 
 # Map WAN model folders from network volume
 RUN echo "  checkpoints: models/diffusion_models/" >> /comfyui/extra_model_paths.yaml \
