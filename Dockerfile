@@ -9,7 +9,9 @@ RUN cd /comfyui/custom_nodes \
     && uv pip install -r ComfyUI-GGUF/requirements.txt
 
 # Map WAN model folders from network volume
-RUN echo "  diffusion_models: models/diffusion_models/" >> /comfyui/extra_model_paths.yaml \
+RUN echo "  checkpoints: models/diffusion_models/" >> /comfyui/extra_model_paths.yaml \
+    && echo "  diffusion_models: models/diffusion_models/" >> /comfyui/extra_model_paths.yaml \
     && echo "  unet: models/diffusion_models/" >> /comfyui/extra_model_paths.yaml \
     && echo "  text_encoders: models/text_encoders/" >> /comfyui/extra_model_paths.yaml \
-    && echo "  clip: models/text_encoders/" >> /comfyui/extra_model_paths.yaml
+    && echo "  clip: models/text_encoders/" >> /comfyui/extra_model_paths.yaml \
+    && echo "  loras: loras/" >> /comfyui/extra_model_paths.yaml
