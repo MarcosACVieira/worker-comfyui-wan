@@ -8,6 +8,8 @@ RUN cd /comfyui/custom_nodes \
     && git clone https://github.com/city96/ComfyUI-GGUF \
     && uv pip install -r ComfyUI-GGUF/requirements.txt
 
-# Map diffusion_models folder from network volume (needed by WanVideoModelLoader)
+# Map WAN model folders from network volume
 RUN echo "  diffusion_models: models/diffusion_models/" >> /comfyui/extra_model_paths.yaml \
-    && echo "  unet: models/diffusion_models/" >> /comfyui/extra_model_paths.yaml
+    && echo "  unet: models/diffusion_models/" >> /comfyui/extra_model_paths.yaml \
+    && echo "  text_encoders: models/text_encoders/" >> /comfyui/extra_model_paths.yaml \
+    && echo "  clip: models/text_encoders/" >> /comfyui/extra_model_paths.yaml
