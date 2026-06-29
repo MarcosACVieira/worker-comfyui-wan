@@ -20,7 +20,8 @@ RUN set +e; \
       sed -i 's/"images" in node_output/"images" in node_output or "gifs" in node_output/g' "$TARGET"; \
       sed -i "s/node_output\['images'\]/node_output.get('images', node_output.get('gifs', []))/g" "$TARGET"; \
       sed -i 's/node_output\["images"\]/node_output.get("images", node_output.get("gifs", []))/g' "$TARGET"; \
-      echo "Patch done"; \
+      echo "Patch done - verifying:"; \
+      grep -n "gifs\|images" "$TARGET" | head -20; \
     else echo "Handler not found - skipping patch"; fi; \
     set -e
 
